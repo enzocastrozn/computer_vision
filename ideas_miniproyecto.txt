@@ -1,0 +1,31 @@
+IDEAS PARA EL MINIPROYECTO DE VISION ARTIFICIAL (deporte / futbol / automocion)
+==============================================================================
+Asignatura: Vision Artificial - Master IA UMU 2026/2027 | Fecha: 10/11/2026
+Exposicion: 30 nov / 1 dic 2026 | Entrega final: 7 ene 2027 | Requisito: BT >= 100%
+Descartados: tenis (ya hecho el año pasado) y padel (mismo pipeline que tenis).
+
+IDEAS PRINCIPALES
+-----------------
+1. Fuera de juego semiautomatico (futbol): punto de fuga con Hough + RANSAC propio, YOLO jugadores, equipos por color/CLIP/DINO y linea de offside (BT2, BT3, BT5, BT6, BT7). [RECOMENDADA si futbol]
+   Datos: https://github.com/Neerajj9/Computer-Vision-based-Offside-Detection-in-Soccer
+2. Marcador de dardos: homografia con 4 puntos de calibracion, puntuacion por coordenadas polares y YOLO para puntas (BT2, BT3, BT5, BT7). [RECOMENDADA si minimo esfuerzo]
+   Datos: https://ieee-dataport.org/open-access/deepdarts-dataset
+3. Billar/snooker: mesa por Hough + RANSAC, vista cenital, bolas con Hough circulos vs YOLO y sugerencia de tiro (BT2, BT3, BT6, BT7).
+   Datos: https://platform.ultralytics.com/leisure/datasets/billiards-new-2
+4. Ocupacion de parkings: plaza libre/ocupada comparando HOG+SVM, CNN, MobileNet, CLIP y DINO (BT4, BT5, BT6). Buena como segundo miniproyecto.
+   Datos: https://web.inf.ufpr.br/vri/databases/parking-lot-database/
+
+OTRAS OPCIONES
+--------------
+5. Daños en coches: segmentar y nombrar daños con YOLO + SAM + CLIP. https://github.com/drbimmer/CarDD
+6. Matriculas españolas: deteccion, rectificacion por homografia y lectura de caracteres. https://github.com/ramajoballester/UC3M-LP
+7. Baloncesto: minimapa con homografia ground truth por frame. https://www.epfl.ch/labs/cvlab/data/sportcenter-dataset/
+8. Ajedrez: tablero por Hough + RANSAC, homografia y clasificacion de casillas. https://data.4tu.nl/datasets/99b5c721-280b-450b-b058-b2900b69a90f
+9. Daños en carretera: deteccion de grietas y baches (usar un subconjunto). https://arxiv.org/abs/2209.08538
+10. Escalada: segmentar presas y agruparlas por color para sacar la via (datasets pequeños). https://huggingface.co/datasets/ClimbVision/ClimbInst
+11. Gimnasio/golf: pose con MediaPipe y conteo de repeticiones (cubre mal BT2/BT7). https://svip-lab.github.io/dataset/RepCount_dataset.html
+12. Ping-pong: dataset pesado (~33 GB) y parecido a tenis, desaconsejado. https://openaccess.thecvf.com/content_CVPRW_2020/papers/w53/Voeikov_TTNet_Real-Time_Temporal_and_Spatial_Video_Analysis_of_Table_Tennis_CVPRW_2020_paper.pdf
+13. Coches por modelo: Stanford Cars caido, alternativa Car-1000. https://github.com/toggle1995/Car-1000
+
+Descartadas por falta de datos de calidad: Formula 1, balonmano, voleibol.
+
