@@ -29,3 +29,15 @@ OTRAS OPCIONES
 
 Descartadas por falta de datos de calidad: Formula 1, balonmano, voleibol.
 
+
+ENZO
+
+1. Frutas: clasificación de tipo de fruta y de madurez en tres niveles (sobremaduro, maduro y verde), con una CNN preentrenada, y uso en imágenes y en webcam.
+   Técnicas: transfer learning con MobileNetV2 (BT5b), clasificación de tipo y madurez (BT5e como comparación) y aumentado de datos si lo usan (BT5c).
+   Datos: Anjnney/RipeSort: https://github.com/Anjnney/RipeSort
+   Ejemplo: https://www.youtube.com/watch?v=TG_Gjv7VJm8
+2. Piezas de fabricación: detección de defectos en piezas industriales con PatchCore, sobre el dataset MVTec AD, con API y visor en tiempo real.
+   Técnicas: embeddings de un modelo preentrenado con memoria de parches (BT6b, BT6e), mapas de calor de anomalía (BT5h) y exportación a OpenVINO (BT5i).
+   Datos: choeyunbeom/DefectVision: https://github.com/choeyunbeom/DefectVision
+3. Rostros: Entrena una ResNet18 propia en Keras usando las etiquetas corregidas de FER+ de Microsoft, en lugar de las originales de FER2013, porque las originales tienen muchos errores. Incluye aumentado con random erasing. El autor reporta un 76,71 % de acierto en test, que conviene reproducir. Es muy útil para discutir el ruido de etiquetas (BT5c, BT5a).
+   Datos: https://github.com/MeB4You/FER2013 https://github.com/gitshanks/fer2013 https://github.com/amineHorseman/facial-expression-recognition-using-cnn
