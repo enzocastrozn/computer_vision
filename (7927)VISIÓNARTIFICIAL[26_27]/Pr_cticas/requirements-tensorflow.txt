@@ -1,0 +1,10 @@
+-r requirements-base.txt
+
+# Extra para los notebooks 08 y 09; mismo entorno Python 3.11 que DINOv2.
+# Para GPU NVIDIA, instalar además el extra and-cuda de esta misma versión;
+# véase INSTALL.md. No instalar tensorflow-cpu junto a tensorflow.
+tensorflow==2.21.0
+keras==3.15.1
+tensorflow-datasets==4.9.10
+# Necesario para tf_flowers a través de etils también en Python 3.11.
+importlib-resources==7.1.0

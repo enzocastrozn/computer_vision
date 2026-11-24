@@ -1,0 +1,51 @@
+MONITOR DEL CONDUCTOR - INSTALACIÓN Y EJECUCIÓN
+================================================
+
+Todos los comandos se ejecutan desde la raíz del repositorio.
+
+
+1. ENTORNO
+----------
+Con uv (no hace falta tener Python 3.12: uv lo descarga):
+
+    uv sync --locked
+
+Sin uv (hace falta Python 3.12):
+
+    py -3.12 -m venv .venv          (Windows)  y  .venv\Scripts\Activate.ps1
+    python3.12 -m venv .venv        (Linux)    y  source .venv/bin/activate
+    python -m pip install -r requirements.txt
+
+Con uv, los comandos de abajo se ejecutan con "uv run python ..."; sin uv, con el entorno activado.
+
+
+2. DATOS
+--------
+Todo va en data/, que no se sube al repositorio.
+
+- Modelo de la cara de MediaPipe (necesario para la demo):
+      python scripts/download_data.py
+
+- State Farm Distracted Driver Detection (Kaggle, ~4,3 GB):
+      a) Iniciar sesión en Kaggle y aceptar las reglas en
+         https://www.kaggle.com/competitions/state-farm-distracted-driver-detection/rules
+      b) En la pestaña Data, "Download All" y descomprimir en data/statefarm/, de forma que
+         queden data/statefarm/driver_imgs_list.csv y data/statefarm/imgs/train/c0 ... c9.
+
+- MRL Eye Dataset (~340 MB):
+      a) Descargar http://mrl.cs.vsb.cz/data/eyedataset/mrlEyes_2018_01.zip
+         (página del dataset: https://mrl.cs.vsb.cz/eyedataset.html).
+      b) Descomprimir en data/mrl_eye/, de forma que quede data/mrl_eye/mrlEyes_2018_01/.
+
+
+3. EJECUCIÓN
+------------
+Demo con la webcam (c = calibrar mirando a la carretera, q = salir):
+
+    python scripts/demo_webcam.py
+    python scripts/demo_webcam.py --video clip.mp4 --guardar results/demo.mp4
+
+Imágenes de los datasets (en results/figuras/, que sí está en el repositorio):
+
+    python scripts/figuras_dataset.py statefarm
+    python scripts/figuras_dataset.py mrl

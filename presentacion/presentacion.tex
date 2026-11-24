@@ -1,0 +1,487 @@
+% Diapositivas de la exposición del miniproyecto de Visión Artificial (30 nov - 1 dic de 2026).
+% Mismo estilo que la presentación de Machine Learning (plantilla de Pablo).
+% Compilar desde esta carpeta con: pdflatex presentacion.tex  (dos veces).
+% Las imágenes se toman de ../results/figuras/ (están en el repositorio):
+%   statefarm_clases.png y mrl_ojos.png -> uv run python scripts/figuras_dataset.py statefarm|mrl
+%   demo.png                            -> captura de la demo (uv run python scripts/demo_webcam.py)
+% Si no están, sale un recuadro en su lugar.
+\documentclass[aspectratio=169,9pt,t,xcolor={table}]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+% Títulos en Oswald, una fuente estrecha. Si no está instalada (en Overleaf no lo está), se usa
+% Helvetica Narrow, también estrecha, para que los títulos ocupen lo mismo.
+\IfFileExists{oswald.sty}
+  {\usepackage{oswald}\newcommand{\titular}{\sffamily}}
+  {\renewcommand{\sfdefault}{phv}\newcommand{\titular}{\sffamily\fontseries{mc}\selectfont}}
+\usepackage[default]{sourcecodepro} % texto general monoespaciado
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,calc,arrows.meta}
+\usepackage[most]{tcolorbox}
+\usepackage{array}
+
+% ---------- Colores ----------
+\definecolor{azul}{RGB}{61,120,186}
+\definecolor{celeste}{HTML}{DAE6F3}
+\definecolor{titulo}{HTML}{434343}
+\definecolor{texto}{HTML}{333333}
+\definecolor{marino}{HTML}{0B3954}
+\definecolor{gris}{HTML}{7A7A7A}
+\definecolor{lineas}{HTML}{A6A6A6}
+\definecolor{cajafondo}{HTML}{FFF2CC}
+\definecolor{cajaborde}{HTML}{BF9000}
+\definecolor{cajatitulo}{HTML}{7F6000}
+\definecolor{rojo}{HTML}{B23A3A}
+\definecolor{verde}{HTML}{2E7D4F}
+
+% ---------- Tema ----------
+\renewcommand{\familydefault}{\ttdefault}
+\AtBeginDocument{\renewcommand{\familydefault}{\ttdefault}\normalfont}
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=11mm, text margin right=10mm}
+\setbeamercolor{normal text}{fg=texto,bg=white}
+\setbeamercolor{structure}{fg=azul}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip\vspace*{6mm}%
+  {\titular\fontsize{20}{24}\selectfont\color{titulo}\insertframetitle}\par\vspace*{3mm}}
+\setbeamertemplate{footline}{%
+  \hfill{\ttfamily\fontsize{6}{6}\selectfont\color{gris}\insertframenumber}\hspace*{4mm}\vspace*{3mm}}
+\setbeamertemplate{itemize item}{\color{azul}\textendash}
+\setbeamertemplate{itemize subitem}{\color{azul}\textendash}
+\setbeamertemplate{enumerate item}{\color{azul}\insertenumlabel.}
+\setbeamerfont{itemize/enumerate body}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
+\setlength{\leftmargini}{5mm}
+
+% Separador de sección: banda azul horizontal con el título en blanco
+\newcommand{\seccion}[1]{%
+  \begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[azul] ([yshift=27.4mm]current page.south west) rectangle ([yshift=62.6mm]current page.south east);
+    \node[text=white,font=\titular\fontsize{38}{42}\selectfont] at (current page.center) {#1};
+  \end{tikzpicture}
+  \end{frame}}
+
+% Caja amarilla con título
+\newtcolorbox{caja}[2][]{enhanced, colback=cajafondo, colframe=cajaborde, boxrule=0.6pt,
+  arc=5mm, left=4mm, right=3mm, top=2.5mm, bottom=2.5mm, #1,
+  before upper={{\bfseries\color{cajatitulo}#2}\par\vspace{0.6mm}}}
+
+% Caja celeste para los mensajes clave
+\newtcolorbox{clave}[1][]{enhanced, colback=celeste, colframe=azul, boxrule=0.6pt, arc=3mm,
+  left=3mm, right=3mm, top=1.5mm, bottom=1.5mm, #1}
+
+% Imagen si existe; si no, un recuadro que dice cómo generarla
+\newcommand{\figura}[4]{% fichero, ancho, alto, texto del recuadro
+  \IfFileExists{#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{#1}}{%
+    \begin{tcolorbox}[enhanced, width=#2, height=#3, colback=white, colframe=lineas, boxrule=0.6pt,
+      arc=2mm, borderline={0.6pt}{0pt}{lineas,dashed}, valign=center, halign=center]
+      {\scriptsize\color{gris}#4}
+    \end{tcolorbox}}}
+
+% Tablas con rejilla gris
+\renewcommand{\arraystretch}{1.45}
+\arrayrulecolor{lineas}
+
+\hypersetup{pdftitle={Monitor del conductor},
+  pdfauthor={Enzo Castro, Rodrigo Martínez y Pablo Sánchez}}
+
+\begin{document}
+\color{texto}
+
+% =====================================================================
+% Portada
+% =====================================================================
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[azul] (current page.north west) rectangle ([yshift=35.3mm]current page.south east);
+  \fill[azul] ([xshift=-3.4mm,yshift=35.3mm]current page.south) -- ([xshift=3.4mm,yshift=35.3mm]current page.south)
+              -- ([yshift=31.8mm]current page.south) -- cycle;
+  \node[text=white,font=\titular\fontsize{44}{48}\selectfont] at ([yshift=-30mm]current page.north)
+    {Monitor del conductor};
+  \node[text=white,font=\ttfamily\normalsize] at ([yshift=-44mm]current page.north)
+    {Distracción y somnolencia con una cámara interior};
+  \node[align=center,font=\ttfamily\normalsize,text=marino] at ([yshift=24mm]current page.south)
+    {Enzo Castro · Rodrigo Martínez · Pablo Sánchez};
+  \node[align=center,font=\ttfamily\footnotesize,text=texto] at ([yshift=16mm]current page.south)
+    {Miniproyecto · Visión Artificial\\[0.6mm]Máster en Inteligencia Artificial · Universidad de Murcia};
+  \node[font=\ttfamily\footnotesize,text=gris] at ([yshift=7mm]current page.south) {Noviembre de 2026};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Índice}
+\vspace{6mm}
+\begin{itemize}\setlength{\itemsep}{5mm}\large
+  \item El problema y los datos
+  \item El enfoque: tres señales y una decisión
+  \item Cómo lo evaluaremos y qué tenemos ya
+\end{itemize}
+\end{frame}
+
+% =====================================================================
+% 1. El problema y los datos
+% =====================================================================
+\seccion{El problema y los datos}
+
+\begin{frame}{El problema}
+\vspace{1mm}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{La distracción, primera causa}
+\vspace{1.5mm}
+\begin{itemize}\setlength{\itemsep}{1.4mm}
+  \item Presente en el \textbf{32 \%} de los siniestros mortales de 2025 en España (444).
+  \item El \textbf{47,4 \%} de las denuncias de la última campaña de la DGT, por el móvil.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{Ya es obligatorio en la UE}
+\vspace{1.5mm}
+\begin{itemize}\setlength{\itemsep}{1.4mm}
+  \item Aviso de \textbf{somnolencia} (DDAW): todos los coches nuevos desde julio de 2024.
+  \item Aviso de \textbf{distracción} (ADDW): desde el 7 de julio de 2026.
+\end{itemize}
+\end{columns}
+
+\vspace{6mm}
+\begin{clave}
+\color{marino}\textbf{Objetivo:} un prototipo que, con una cámara interior, detecte si el conductor
+está distraído o tiene sueño y le avise.
+\end{clave}
+
+\vspace{3mm}
+{\scriptsize\color{gris}Fuentes: nota de prensa de la DGT (5 de octubre de 2026); Reglamento (UE) 2019/2144.}
+\end{frame}
+
+\begin{frame}{Los datos}
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\vspace{1mm}
+\begin{tabular}{|p{30mm}|p{52mm}|p{48mm}|}
+\hline
+\textbf{Dataset} & \textbf{Qué contiene} & \textbf{Para qué} \\ \hline
+\textbf{State Farm} (Kaggle) & 22.424 imágenes de 640$\times$480, 10 clases, 26 conductores, vista lateral &
+  Entrenar y evaluar qué hace con las manos \\ \hline
+\textbf{MRL Eye} & 84.898 recortes de ojos en infrarrojo, abiertos o cerrados, 37 sujetos &
+  Ojo abierto o cerrado \\ \hline
+\textbf{Grabaciones propias} & Webcam o coche aparcado, solo nosotros &
+  Probar fuera de los datasets \\ \hline
+\textbf{DMD} (Vicomtech) & Vídeo de 37 conductores, tres cámaras & Plan B, uso académico \\ \hline
+\end{tabular}
+
+\vspace{4mm}
+\raggedright\normalsize
+\begin{itemize}\setlength{\itemsep}{1.2mm}
+  \item El test oficial de State Farm \textbf{no tiene etiquetas}: train, validación y test salen
+        de las imágenes etiquetadas.
+  \item Las clases distinguen la mano: «escribe con la derecha» y «con la izquierda» son clases distintas.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Los datos en imágenes}
+\vspace{-1mm}
+\centering
+\figura{../results/figuras/statefarm_clases.png}{\textwidth}{47mm}{State Farm: una imagen de cada clase\\[1mm]
+  \texttt{uv run python scripts/figuras\_dataset.py statefarm}}
+
+\vspace{1mm}
+\figura{../results/figuras/mrl_ojos.png}{\textwidth}{24mm}{MRL Eye: ojos abiertos y cerrados\\[1mm]
+  \texttt{uv run python scripts/figuras\_dataset.py mrl}}
+\end{frame}
+
+\begin{frame}{Cómo separamos los datos}
+\vspace{1mm}
+Cada conductor aparece en cientos de fotogramas casi iguales. Si se reparten al azar, el mismo
+conductor cae en train y en test.
+
+\vspace{1mm}
+\centering
+\begin{tikzpicture}[x=1mm,y=0.8mm,
+    caj/.style={draw=azul, rounded corners=2mm, minimum width=44mm, minimum height=9mm},
+    c/.style={circle, minimum size=5.5mm, inner sep=0pt, font=\ttfamily\scriptsize\bfseries, text=white}]
+  % Partición aleatoria
+  \node[font=\ttfamily\small\bfseries, text=rojo] at (24,22) {Aleatoria};
+  \node[caj, fill=celeste] (tr1) at (24,12) {};
+  \node[caj, fill=cajafondo, draw=cajaborde] (te1) at (24,-2) {};
+  \node[font=\ttfamily\scriptsize, text=gris, anchor=east] at (1,12) {train};
+  \node[font=\ttfamily\scriptsize, text=gris, anchor=east] at (1,-2) {test};
+  \foreach \l/\x/\col in {A/9/azul,B/19/verde,C/29/rojo,D/39/cajatitulo} {
+    \node[c, fill=\col] at (\x,12) {\l};
+    \node[c, fill=\col] at (\x,-2) {\l};
+  }
+  % Partición por conductor
+  \node[font=\ttfamily\small\bfseries, text=verde] at (100,22) {Por conductor};
+  \node[caj, fill=celeste] at (100,12) {};
+  \node[caj, fill=cajafondo, draw=cajaborde] at (100,-2) {};
+  \node[font=\ttfamily\scriptsize, text=gris, anchor=east] at (77,12) {train};
+  \node[font=\ttfamily\scriptsize, text=gris, anchor=east] at (77,-2) {test};
+  \foreach \l/\x/\col in {A/90/azul,B/100/verde,C/110/rojo} { \node[c, fill=\col] at (\x,12) {\l}; }
+  \node[c, fill=cajatitulo] at (100,-2) {D};
+  \node[font=\ttfamily\scriptsize, text=rojo] at (24,-12) {el modelo reconoce a la persona};
+  \node[font=\ttfamily\scriptsize, text=verde] at (100,-12) {conductor nuevo, como en un coche real};
+\end{tikzpicture}
+
+\vspace{2mm}
+\begin{clave}
+\color{marino}Separamos \textbf{por conductor} (unos 18 / 4 / 4) y por sujeto en MRL Eye. Con la
+partición aleatoria, el acierto sale inflado: lo mediremos.
+\end{clave}
+\end{frame}
+
+% =====================================================================
+% 2. El enfoque
+% =====================================================================
+\seccion{El enfoque}
+
+\begin{frame}{Tres señales y una decisión}
+\vspace{1mm}
+\centering
+\begin{tikzpicture}[x=1mm,y=0.9mm,
+    nodo/.style={draw=azul, fill=celeste, rounded corners=3mm, align=center, text=marino,
+                 font=\ttfamily\scriptsize, minimum height=9mm, text width=24mm},
+    flecha/.style={-{Stealth[length=2mm]}, draw=gris, line width=0.7pt},
+    bt/.style={font=\ttfamily\tiny, text=cajatitulo}]
+  \node[nodo, text width=14mm] (cam) at (0,0) {\textbf{Cámara}\\interior};
+  \node[nodo] (img)  at (29,11) {\textbf{Imagen completa}\\preprocesada};
+  \node[nodo] (mp)   at (29,-11) {\textbf{Puntos de la cara}\\MediaPipe (478)};
+  \node[nodo] (act)  at (61,18) {\textbf{1. Manos}\\qué está haciendo};
+  \node[nodo] (ojos) at (61,0)  {\textbf{2. Ojos}\\abiertos o cerrados};
+  \node[nodo] (mir)  at (61,-18) {\textbf{3. Mirada}\\giro de la cabeza};
+  \node[nodo, fill=cajafondo, draw=cajaborde, text=cajatitulo, text width=20mm] (dec) at (93,0) {\textbf{Decisión}\\\textbf{temporal}};
+  \node[nodo, fill=azul, text=white, text width=13mm] (alerta) at (118,0) {\textbf{Alerta}};
+  \draw[flecha] (cam) -- (img);
+  \draw[flecha] (cam) -- (mp);
+  \draw[flecha] (img) -- (act);
+  \draw[flecha] (mp) -- (ojos);
+  \draw[flecha] (mp) -- (mir);
+  \draw[flecha] (act) -- (dec);
+  \draw[flecha] (ojos) -- (dec);
+  \draw[flecha] (mir) -- (dec);
+  \draw[flecha] (dec) -- (alerta);
+  \node[bt, anchor=south] at (act.north) {CNN · ResNet · ViT · DINOv2/v3};
+  \node[bt, anchor=north] at (ojos.south) {EAR · HOG+SVM · CNN};
+  \node[bt, anchor=north] at (mir.south) {PnP + RANSAC};
+  \node[bt, anchor=north] at (dec.south) {PERCLOS · tiempos};
+\end{tikzpicture}
+
+\vspace{2mm}
+\raggedright\small
+Un solo sistema para los dos avisos de la UE: \textbf{somnolencia} (ojos) y
+\textbf{distracción} (manos y mirada).
+\end{frame}
+
+\begin{frame}{1. Manos: qué está haciendo}
+\vspace{3mm}
+\begin{columns}[T,onlytextwidth]
+\column{0.47\textwidth}
+\begin{caja}{Preprocesado}
+\small
+\begin{itemize}\setlength{\itemsep}{0.6mm}
+  \item Redimensionar manteniendo 4:3.
+  \item Normalizar como ImageNet.
+  \item \textit{Augmentation}: recorte y giro leves, brillo y contraste.
+  \item \textbf{Sin volteo horizontal}: «móvil con la derecha» pasaría a «con la izquierda».
+\end{itemize}
+\end{caja}
+\column{0.49\textwidth}
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|p{33mm}|p{30mm}|}
+\hline
+\textbf{Modelo} & \textbf{Qué aporta} \\ \hline
+\textbf{CNN propia} & Línea base desde cero \\ \hline
+\textbf{ResNet} & Congelada frente a \textit{fine-tuning} \\ \hline
+\textbf{ViT} & Atención frente a convolución \\ \hline
+\textbf{DINOv2/v3} + SVM & Embeddings sin reentrenar \\ \hline
+\textbf{Grad-CAM} & ¿Mira las manos o el fondo? \\ \hline
+\end{tabular}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2. Ojos y 3. Mirada}
+\vspace{1mm}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{Ojos: ¿abiertos o cerrados?}
+\vspace{1.5mm}
+\begin{caja}{EAR: alto del ojo entre ancho}
+\centering
+$\mathrm{EAR} = \dfrac{\lVert p_2-p_6\rVert + \lVert p_3-p_5\rVert}{2\,\lVert p_1-p_4\rVert}$
+
+\vspace{1mm}
+\raggedright\scriptsize Baja casi a 0 al cerrar el ojo. Seis puntos de MediaPipe por ojo.
+\end{caja}
+\vspace{1.5mm}
+\begin{itemize}\setlength{\itemsep}{1mm}\small
+  \item Geométrico (EAR) frente a \textbf{HOG + SVM} y una \textbf{CNN} sobre MRL Eye.
+  \item Recortes: escala de grises y \textbf{CLAHE} para poca luz e infrarrojo.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{Mirada: ¿hacia dónde gira la cabeza?}
+\vspace{1.5mm}
+\begin{itemize}\setlength{\itemsep}{1.4mm}\small
+  \item \textbf{PnP}: de los puntos 2D de la cara y un modelo 3D de cara a la rotación de la cabeza.
+  \item \textbf{RANSAC} frente a mínimos cuadrados: cuando la mano o el móvil tapan parte de la
+        cara, hay puntos erróneos.
+  \item Pose «mirando a la carretera» como referencia: rotación relativa y ángulos de Euler, como en
+        la entrega del Tema 2. Da igual dónde esté la cámara.
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Decisión temporal}
+\vspace{1mm}
+Un fotograma no basta: un parpadeo cierra los ojos y mirar el retrovisor gira la cabeza.
+
+\vspace{3mm}
+\centering\footnotesize
+\begin{tabular}{|l|p{62mm}|l|}
+\hline
+\textbf{Alerta} & \textbf{Regla} & \textbf{Aviso UE} \\ \hline
+\textbf{Microsueño} & Ojos cerrados seguidos más de 1 s & DDAW \\ \hline
+\textbf{Somnolencia} & PERCLOS (\% del tiempo con los ojos cerrados en 30 s) por encima del umbral & DDAW \\ \hline
+\textbf{Mirada fuera} & Cabeza girada más de 30° durante más de 2 s & ADDW \\ \hline
+\textbf{Actividad} & Móvil, bebida, radio... durante varios fotogramas seguidos & ADDW \\ \hline
+\end{tabular}
+
+\vspace{4mm}
+\raggedright
+{\small\color{gris}Los umbrales son de partida: los ajustaremos con nuestras grabaciones y los justificaremos en la memoria.}
+\end{frame}
+
+\begin{frame}{Tópicos de la asignatura}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.3}
+\vspace{0mm}
+\begin{tabular}{|p{14mm}|p{100mm}|r|}
+\hline
+\textbf{Bloque} & \textbf{Técnica en el proyecto} & \textbf{\%} \\ \hline
+\textbf{BT1} & Particiones por conductor y semillas · gráficas de resultados · demo en directo & 15 \\ \hline
+\textbf{BT2} & Pose de la cabeza con PnP y reproyección & 5 \\ \hline
+\textbf{BT3} & CLAHE para poca luz e infrarrojo & 5 \\ \hline
+\textbf{BT4} & HOG + SVM para el estado del ojo & 5 \\ \hline
+\textbf{BT5} & CNN propia · transfer learning · augmentation · métricas · clásico frente a aprendido · Grad-CAM & 30 \\ \hline
+\textbf{BT6} & ViT · embeddings de DINOv2/v3 + SVM · puntos de la cara · integración de varios modelos & 25 \\ \hline
+\textbf{BT7} & RANSAC · frente a mínimos cuadrados · sensibilidad al umbral & 15 \\ \hline
+\rowcolor{celeste}\textbf{Total} & & \textbf{100} \\ \hline
+\end{tabular}
+
+\vspace{3mm}
+\raggedright\normalsize
+Integrados en \textbf{un único miniproyecto}, cada uno con su porqué.
+\end{frame}
+
+% =====================================================================
+% 3. Evaluación y estado
+% =====================================================================
+\seccion{Evaluación y estado}
+
+\begin{frame}{Cómo lo evaluaremos}
+\vspace{1mm}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{Métricas}
+\vspace{1.5mm}
+\begin{itemize}\setlength{\itemsep}{1.4mm}
+  \item Accuracy, \textbf{F1 macro} y matriz de confusión (10 clases).
+  \item Acierto de ojo abierto o cerrado, por sujeto.
+  \item Fotogramas por segundo en un portátil.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{Comparaciones}
+\vspace{1.5mm}
+\begin{itemize}\setlength{\itemsep}{1.4mm}
+  \item Mismo modelo: partición \textbf{aleatoria} frente a \textbf{por conductor}.
+  \item CNN frente a ViT y DINOv2/v3; clásico frente a aprendido.
+  \item Cuánto cae el acierto con \textbf{nuestras grabaciones}.
+\end{itemize}
+\end{columns}
+
+\vspace{6mm}
+\begin{clave}
+\color{marino}La pregunta central: ¿cuánto acierta de verdad con un conductor que nunca ha visto?
+\end{clave}
+\end{frame}
+
+\begin{frame}{Lo que tenemos ya}
+\vspace{1mm}
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
+\centering
+\figura{../results/figuras/demo.png}{\linewidth}{50mm}{Captura de la demo\\[1mm]
+  \texttt{uv run python scripts/demo\_webcam.py}\\[1mm]guardar como results/figuras/demo.png}
+\column{0.44\textwidth}
+\begin{caja}{Demo inicial}
+\begin{itemize}\setlength{\itemsep}{1mm}
+  \item Puntos de la cara con MediaPipe.
+  \item EAR en directo y aviso con los ojos cerrados más de 1 s.
+  \item Giro de la cabeza y aviso con la mirada fuera más de 2 s.
+\end{itemize}
+\end{caja}
+\vspace{2mm}
+{\small Entorno común con uv y repositorio en GitHub.}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Riesgos y plan B}
+\vspace{2mm}
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\color{rojo}Riesgos}
+\vspace{2mm}
+\begin{itemize}\setlength{\itemsep}{1.8mm}
+  \item State Farm está grabado \textbf{de lado}, desde el copiloto; los ojos se ven mejor de frente.
+  \item Condiciones de uso de State Farm (Kaggle): comprobarlas al descargar.
+  \item Poca luz y gafas: los ojos se ven peor.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{\color{azul}Plan B}
+\vspace{2mm}
+\begin{itemize}\setlength{\itemsep}{1.8mm}
+  \item Cámara en una posición parecida, o medir la caída de acierto y explicarla.
+  \item DMD de Vicomtech (se pide por formulario).
+  \item CLAHE y comparar con las imágenes en infrarrojo de MRL Eye.
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Reparto y calendario}
+\vspace{1mm}
+\centering\footnotesize
+\begin{tabular}{|l|p{90mm}|}
+\hline
+\textbf{Quién} & \textbf{Parte} \\ \hline
+\textbf{Rodrigo} & Manos: CNN, ResNet y particiones por conductor \\ \hline
+\textbf{Enzo} & Manos: ViT, DINOv2/v3 y Grad-CAM \\ \hline
+\textbf{Pablo} & Ojos y mirada: EAR, HOG+SVM, PnP con RANSAC y la demo \\ \hline
+\end{tabular}
+
+\vspace{4mm}
+\begin{tabular}{|l|p{90mm}|}
+\hline
+\textbf{Cuándo} & \textbf{Qué} \\ \hline
+\textbf{2 – 13 dic} & Modelos principales y evaluación montada \\ \hline
+\textbf{14 dic – 6 ene} & Comparativas, grabaciones propias, casos de fallo y memoria \\ \hline
+\textbf{7 ene} & Entrega: memoria, código y vídeo \\ \hline
+\end{tabular}
+\end{frame}
+
+% =====================================================================
+% Cierre
+% =====================================================================
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[azul] (current page.north west) rectangle ([yshift=35.3mm]current page.south east);
+  \fill[azul] ([xshift=-3.4mm,yshift=35.3mm]current page.south) -- ([xshift=3.4mm,yshift=35.3mm]current page.south)
+              -- ([yshift=31.8mm]current page.south) -- cycle;
+  \node[text=white,font=\titular\fontsize{48}{52}\selectfont] at ([yshift=-32mm]current page.north) {Gracias};
+  \node[align=center,font=\ttfamily\normalsize,text=marino] at ([yshift=24mm]current page.south)
+    {Enzo Castro · Rodrigo Martínez · Pablo Sánchez};
+  \node[align=center,font=\ttfamily\footnotesize,text=texto] at ([yshift=16mm]current page.south)
+    {Miniproyecto · Visión Artificial\\[0.6mm]Máster en Inteligencia Artificial · Universidad de Murcia};
+  \node[font=\ttfamily\footnotesize,text=gris] at ([yshift=7mm]current page.south) {Noviembre de 2026};
+\end{tikzpicture}
+\end{frame}
+
+\end{document}
