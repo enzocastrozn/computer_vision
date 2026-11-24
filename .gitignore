@@ -216,3 +216,30 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Miniproyecto: datos y modelos descargados (no se suben al repo) ---
+# Los datasets tienen licencias que no permiten redistribuirlos y las grabaciones propias
+# son datos biométricos. Cómo obtenerlos: INSTALL.txt. results/ sí se sube (figuras pequeñas).
+data/*
+!data/README.md
+*.task
+*.pt
+*.pth
+*.onnx
+*.mp4
+*.avi
+*.mov
+kaggle.json
+
+# LaTeX (auxiliares de la presentación)
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+

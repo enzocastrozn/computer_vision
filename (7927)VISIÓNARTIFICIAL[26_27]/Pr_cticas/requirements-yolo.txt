@@ -1,0 +1,9 @@
+-r requirements-base.txt
+
+# Instalar antes PyTorch/torchvision CPU o CUDA, igual que para DINOv2.
+# La variante headless evita duplicar OpenCV. Solo necesitamos exportar ONNX;
+# el extra export completo añadiría otros motores y restricciones de TensorFlow.
+ultralytics-opencv-headless[export-base]==8.4.178
+onnx==1.23.2
+onnxruntime==1.31.0
+onnxslim==0.1.98
