@@ -3,6 +3,7 @@
 % Compilar desde esta carpeta con: pdflatex presentacion.tex  (dos veces).
 % Las imágenes se toman de ../results/figuras/ (están en el repositorio):
 %   statefarm_clases.png y mrl_ojos.png -> uv run python scripts/figuras_dataset.py statefarm|mrl
+%   dmd_camaras.png                     -> figura oficial del DMD (Vicomtech), sin modificar
 %   demo.png                            -> captura de la demo (uv run python scripts/demo_webcam.py)
 % Si no están, sale un recuadro en su lugar.
 \documentclass[aspectratio=169,9pt,t,xcolor={table}]{beamer}
@@ -72,13 +73,18 @@
 \newtcolorbox{clave}[1][]{enhanced, colback=celeste, colframe=azul, boxrule=0.6pt, arc=3mm,
   left=3mm, right=3mm, top=1.5mm, bottom=1.5mm, #1}
 
-% Imagen si existe; si no, un recuadro que dice cómo generarla
-\newcommand{\figura}[4]{% fichero, ancho, alto, texto del recuadro
-  \IfFileExists{#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{#1}}{%
-    \begin{tcolorbox}[enhanced, width=#2, height=#3, colback=white, colframe=lineas, boxrule=0.6pt,
+% Imagen si existe; si no, un recuadro con el texto dado.
+% Se busca primero en ../results/figuras/ (repositorio) y después en figuras/ (Overleaf: subir
+% allí los PNG de results/figuras/).
+\newcommand{\recuadro}[3]{%
+    \begin{tcolorbox}[enhanced, width=#1, height=#2, colback=white, colframe=lineas, boxrule=0.6pt,
       arc=2mm, borderline={0.6pt}{0pt}{lineas,dashed}, valign=center, halign=center]
-      {\scriptsize\color{gris}#4}
-    \end{tcolorbox}}}
+      {\scriptsize\color{gris}#3}
+    \end{tcolorbox}}
+\newcommand{\figura}[4]{% nombre del fichero, ancho, alto, texto del recuadro
+  \IfFileExists{../results/figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{../results/figuras/#1}}{%
+  \IfFileExists{figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{figuras/#1}}{%
+  \recuadro{#2}{#3}{#4}}}}
 
 % Tablas con rejilla gris
 \renewcommand{\arraystretch}{1.45}
@@ -101,7 +107,7 @@
   \node[text=white,font=\titular\fontsize{44}{48}\selectfont] at ([yshift=-30mm]current page.north)
     {Monitor del conductor};
   \node[text=white,font=\ttfamily\normalsize] at ([yshift=-44mm]current page.north)
-    {Distracción y somnolencia con una cámara interior};
+    {Distracción y somnolencia con cámaras interiores};
   \node[align=center,font=\ttfamily\normalsize,text=marino] at ([yshift=24mm]current page.south)
     {Enzo Castro · Rodrigo Martínez · Pablo Sánchez};
   \node[align=center,font=\ttfamily\footnotesize,text=texto] at ([yshift=16mm]current page.south)
@@ -128,7 +134,7 @@
 \vspace{1mm}
 \begin{columns}[T,onlytextwidth]
 \column{0.48\textwidth}
-\textbf{La distracción, primera causa}
+\textbf{Distracción: el factor n.º 1}
 \vspace{1.5mm}
 \begin{itemize}\setlength{\itemsep}{1.4mm}
   \item Presente en el \textbf{32 \%} de los siniestros mortales de 2025 en España (444).
@@ -145,8 +151,8 @@
 
 \vspace{6mm}
 \begin{clave}
-\color{marino}\textbf{Objetivo:} un prototipo que, con una cámara interior, detecte si el conductor
-está distraído o tiene sueño y le avise.
+\color{marino}\textbf{Objetivo:} un prototipo que, con cámaras dentro del coche, detecte si el
+conductor está distraído o tiene sueño y le avise.
 \end{clave}
 
 \vspace{3mm}
@@ -164,9 +170,10 @@ está distraído o tiene sueño y le avise.
   Entrenar y evaluar qué hace con las manos \\ \hline
 \textbf{MRL Eye} & 84.898 recortes de ojos en infrarrojo, abiertos o cerrados, 37 sujetos &
   Ojo abierto o cerrado \\ \hline
+\textbf{DMD} (Vicomtech) & Vídeo RGB de tres cámaras sincronizadas (cara, cuerpo, manos), etiquetas por fotograma &
+  Mirada, somnolencia y el sistema completo \\ \hline
 \textbf{Grabaciones propias} & Webcam o coche aparcado, solo nosotros &
   Probar fuera de los datasets \\ \hline
-\textbf{DMD} (Vicomtech) & Vídeo de 37 conductores, tres cámaras & Plan B, uso académico \\ \hline
 \end{tabular}
 
 \vspace{4mm}
@@ -181,12 +188,43 @@ está distraído o tiene sueño y le avise.
 \begin{frame}{Los datos en imágenes}
 \vspace{-1mm}
 \centering
-\figura{../results/figuras/statefarm_clases.png}{\textwidth}{47mm}{State Farm: una imagen de cada clase\\[1mm]
-  \texttt{uv run python scripts/figuras\_dataset.py statefarm}}
+\figura{statefarm_clases.png}{\textwidth}{47mm}{State Farm: una imagen de cada clase (falta la figura)}
 
 \vspace{1mm}
-\figura{../results/figuras/mrl_ojos.png}{\textwidth}{24mm}{MRL Eye: ojos abiertos y cerrados\\[1mm]
-  \texttt{uv run python scripts/figuras\_dataset.py mrl}}
+\figura{mrl_ojos.png}{\textwidth}{24mm}{MRL Eye: ojos abiertos y cerrados (falta la figura)}
+\end{frame}
+
+\begin{frame}{Una cámara no basta}
+\vspace{1mm}
+\centering
+\figura{dmd_camaras.png}{\textwidth}{27mm}{DMD: cámaras de cara, cuerpo y manos (falta la figura)}
+
+{\tiny\color{gris}Cámaras de cara, cuerpo y manos del DMD. Imagen: Vicomtech (CC BY-NC-ND 4.0).}
+
+\vspace{2mm}
+\raggedright
+\begin{columns}[T,onlytextwidth]
+\column{0.56\textwidth}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{42mm}|p{24mm}|}
+\hline
+\textbf{¿MediaPipe ve la cara?} & \textbf{Detectada} \\ \hline
+State Farm, de lado (una foto por clase) & 4 de 10 \\ \hline
+DMD, cámara del cuerpo (de lado) & 41 de 120 \\ \hline
+DMD, cámara de la cara (de frente) & 116 de 120 \\ \hline
+\end{tabular}
+\column{0.40\textwidth}
+\small
+De lado solo ve la cara cuando el conductor \textbf{deja de mirar la carretera}.
+
+\vspace{2mm}
+\begin{clave}
+\color{marino}Como en los coches reales: una cámara de frente para ojos y mirada, y otra de lado
+para las manos.
+\end{clave}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Cómo separamos los datos}
@@ -223,8 +261,8 @@ conductor cae en train y en test.
 
 \vspace{2mm}
 \begin{clave}
-\color{marino}Separamos \textbf{por conductor} (unos 18 / 4 / 4) y por sujeto en MRL Eye. Con la
-partición aleatoria, el acierto sale inflado: lo mediremos.
+\color{marino}Separamos \textbf{por conductor} (unos 18 / 4 / 4 en State Farm, también en el DMD) y por
+sujeto en MRL Eye. Con la partición aleatoria, el acierto sale inflado: lo mediremos.
 \end{clave}
 \end{frame}
 
@@ -241,7 +279,8 @@ partición aleatoria, el acierto sale inflado: lo mediremos.
                  font=\ttfamily\scriptsize, minimum height=9mm, text width=24mm},
     flecha/.style={-{Stealth[length=2mm]}, draw=gris, line width=0.7pt},
     bt/.style={font=\ttfamily\tiny, text=cajatitulo}]
-  \node[nodo, text width=14mm] (cam) at (0,0) {\textbf{Cámara}\\interior};
+  \node[nodo, text width=15mm] (camb) at (0,11) {\textbf{Cámara}\\de lado};
+  \node[nodo, text width=15mm] (camf) at (0,-11) {\textbf{Cámara}\\de frente};
   \node[nodo] (img)  at (29,11) {\textbf{Imagen completa}\\preprocesada};
   \node[nodo] (mp)   at (29,-11) {\textbf{Puntos de la cara}\\MediaPipe (478)};
   \node[nodo] (act)  at (61,18) {\textbf{1. Manos}\\qué está haciendo};
@@ -249,8 +288,8 @@ partición aleatoria, el acierto sale inflado: lo mediremos.
   \node[nodo] (mir)  at (61,-18) {\textbf{3. Mirada}\\giro de la cabeza};
   \node[nodo, fill=cajafondo, draw=cajaborde, text=cajatitulo, text width=20mm] (dec) at (93,0) {\textbf{Decisión}\\\textbf{temporal}};
   \node[nodo, fill=azul, text=white, text width=13mm] (alerta) at (118,0) {\textbf{Alerta}};
-  \draw[flecha] (cam) -- (img);
-  \draw[flecha] (cam) -- (mp);
+  \draw[flecha] (camb) -- (img);
+  \draw[flecha] (camf) -- (mp);
   \draw[flecha] (img) -- (act);
   \draw[flecha] (mp) -- (ojos);
   \draw[flecha] (mp) -- (mir);
@@ -291,7 +330,7 @@ Un solo sistema para los dos avisos de la UE: \textbf{somnolencia} (ojos) y
 \textbf{Modelo} & \textbf{Qué aporta} \\ \hline
 \textbf{CNN propia} & Línea base desde cero \\ \hline
 \textbf{ResNet} & Congelada frente a \textit{fine-tuning} \\ \hline
-\textbf{ViT} & Atención frente a convolución \\ \hline
+\textbf{ViT} preentrenado & Atención frente a convolución \\ \hline
 \textbf{DINOv2/v3} + SVM & Embeddings sin reentrenar \\ \hline
 \textbf{Grad-CAM} & ¿Mira las manos o el fondo? \\ \hline
 \end{tabular}
@@ -350,26 +389,26 @@ Un fotograma no basta: un parpadeo cierra los ojos y mirar el retrovisor gira la
 \end{frame}
 
 \begin{frame}{Tópicos de la asignatura}
-\centering\scriptsize
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.3}
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.35}
 \vspace{0mm}
-\begin{tabular}{|p{14mm}|p{100mm}|r|}
+\begin{tabular}{|p{12mm}|p{104mm}|r|}
 \hline
-\textbf{Bloque} & \textbf{Técnica en el proyecto} & \textbf{\%} \\ \hline
-\textbf{BT1} & Particiones por conductor y semillas · gráficas de resultados · demo en directo & 15 \\ \hline
-\textbf{BT2} & Pose de la cabeza con PnP y reproyección & 5 \\ \hline
+\textbf{Bloque} & \textbf{Dónde lo usamos} & \textbf{\%} \\ \hline
+\textbf{BT1} & Particiones por conductor y semillas · gráficas · demo en directo & 15 \\ \hline
+\textbf{BT2} & Giro de la cabeza con PnP & 5 \\ \hline
 \textbf{BT3} & CLAHE para poca luz e infrarrojo & 5 \\ \hline
-\textbf{BT4} & HOG + SVM para el estado del ojo & 5 \\ \hline
+\textbf{BT4} & HOG + SVM para el ojo & 5 \\ \hline
 \textbf{BT5} & CNN propia · transfer learning · augmentation · métricas · clásico frente a aprendido · Grad-CAM & 30 \\ \hline
-\textbf{BT6} & ViT · embeddings de DINOv2/v3 + SVM · puntos de la cara · integración de varios modelos & 25 \\ \hline
-\textbf{BT7} & RANSAC · frente a mínimos cuadrados · sensibilidad al umbral & 15 \\ \hline
+\textbf{BT6} & ViT · DINOv2/v3 + SVM · puntos de la cara · varios modelos juntos & 25 \\ \hline
+\textbf{BT7} & RANSAC frente a mínimos cuadrados · sensibilidad al umbral & 15 \\ \hline
 \rowcolor{celeste}\textbf{Total} & & \textbf{100} \\ \hline
 \end{tabular}
 
 \vspace{3mm}
 \raggedright\normalsize
-Integrados en \textbf{un único miniproyecto}, cada uno con su porqué.
+Todo en \textbf{un único proyecto}: cada técnica está donde la pide el problema.
 \end{frame}
 
 % =====================================================================
@@ -386,6 +425,7 @@ Integrados en \textbf{un único miniproyecto}, cada uno con su porqué.
 \begin{itemize}\setlength{\itemsep}{1.4mm}
   \item Accuracy, \textbf{F1 macro} y matriz de confusión (10 clases).
   \item Acierto de ojo abierto o cerrado, por sujeto.
+  \item Mirada frente a la etiqueta «mira a la carretera» del DMD.
   \item Fotogramas por segundo en un portátil.
 \end{itemize}
 \column{0.48\textwidth}
@@ -394,7 +434,8 @@ Integrados en \textbf{un único miniproyecto}, cada uno con su porqué.
 \begin{itemize}\setlength{\itemsep}{1.4mm}
   \item Mismo modelo: partición \textbf{aleatoria} frente a \textbf{por conductor}.
   \item CNN frente a ViT y DINOv2/v3; clásico frente a aprendido.
-  \item Cuánto cae el acierto con \textbf{nuestras grabaciones}.
+  \item Cuánto cae el acierto al pasar de State Farm \textbf{al DMD} (otro coche, otros
+        conductores) y a \textbf{nuestras grabaciones}.
 \end{itemize}
 \end{columns}
 
@@ -409,8 +450,7 @@ Integrados en \textbf{un único miniproyecto}, cada uno con su porqué.
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \centering
-\figura{../results/figuras/demo.png}{\linewidth}{50mm}{Captura de la demo\\[1mm]
-  \texttt{uv run python scripts/demo\_webcam.py}\\[1mm]guardar como results/figuras/demo.png}
+\figura{demo.png}{\linewidth}{50mm}{Captura de la demo\\[1mm](pendiente)}
 \column{0.44\textwidth}
 \begin{caja}{Demo inicial}
 \begin{itemize}\setlength{\itemsep}{1mm}
@@ -420,7 +460,7 @@ Integrados en \textbf{un único miniproyecto}, cada uno con su porqué.
 \end{itemize}
 \end{caja}
 \vspace{2mm}
-{\small Entorno común con uv y repositorio en GitHub.}
+{\small Por ahora el giro sale de la pose que da MediaPipe; el siguiente paso es nuestro PnP con RANSAC.}
 \end{columns}
 \end{frame}
 
@@ -431,17 +471,19 @@ Integrados en \textbf{un único miniproyecto}, cada uno con su porqué.
 \textbf{\color{rojo}Riesgos}
 \vspace{2mm}
 \begin{itemize}\setlength{\itemsep}{1.8mm}
-  \item State Farm está grabado \textbf{de lado}, desde el copiloto; los ojos se ven mejor de frente.
-  \item Condiciones de uso de State Farm (Kaggle): comprobarlas al descargar.
+  \item El DMD es grande: unos 5 GB por conductor.
+  \item Sus tres cámaras no empezaron a grabar a la vez.
+  \item Las clases de State Farm y del DMD no coinciden del todo.
   \item Poca luz y gafas: los ojos se ven peor.
 \end{itemize}
 \column{0.48\textwidth}
 \textbf{\color{azul}Plan B}
 \vspace{2mm}
 \begin{itemize}\setlength{\itemsep}{1.8mm}
-  \item Cámara en una posición parecida, o medir la caída de acierto y explicarla.
-  \item DMD de Vicomtech (se pide por formulario).
-  \item CLAHE y comparar con las imágenes en infrarrojo de MRL Eye.
+  \item Pocos conductores y uno de cada 10-15 fotogramas.
+  \item La herramienta DEx de Vicomtech las alinea.
+  \item Comparar solo las clases comunes.
+  \item CLAHE y comparar con el infrarrojo de MRL Eye.
 \end{itemize}
 \end{columns}
 \end{frame}

@@ -37,6 +37,17 @@ Todo va en data/, que no se sube al repositorio.
          (página del dataset: https://mrl.cs.vsb.cz/eyedataset.html).
       b) Descomprimir en data/mrl_eye/, de forma que quede data/mrl_eye/mrlEyes_2018_01/.
 
+- DMD, Driver Monitoring Dataset de Vicomtech (solo vídeo RGB; uso académico, CC BY-NC-ND 4.0):
+      a) Entrar en https://dmd.vicomtech.org/, sección DOWNLOAD, y rellenar el formulario de
+         "Distraction" (y el de "Drowsiness" para la somnolencia). Hay que ser mayor de 18 años.
+      b) Llega al momento un correo con un README y un enlace por conductor, por ejemplo
+         dmd-dataset-distraction-gA-1.tar.gz (grupo A, conductor 1, unos 5 GB). Los enlaces
+         caducan a las 48 horas. Para empezar no hace falta bajar todos los conductores.
+      c) Descomprimir cada archivo dentro de data/ (tar viene con Windows 10+ y con Linux):
+             tar -xzf dmd-dataset-distraction-gA-1.tar.gz -C data
+         Queda data/dmd/gA/1/s1/...: tres vídeos (face, body, hands), un mosaico con los tres
+         sincronizados y un .json con las etiquetas de cada fotograma.
+
 
 3. EJECUCIÓN
 ------------
