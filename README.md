@@ -10,6 +10,115 @@ distracción (ADDW, desde julio de 2026).
 Por ahora el repositorio tiene lo necesario para la exposición: el plan, una demo inicial y un
 script para sacar imágenes de los datasets.
 
+## Instalación
+
+Todos los comandos se ejecutan desde la raíz del repositorio (`computer_vision/`).
+
+### 1. Entorno
+
+Con uv (recomendado; no hace falta tener Python 3.12, uv lo descarga):
+
+```bash
+uv sync --locked
+```
+
+Sin uv (hace falta Python 3.12 instalado):
+
+```bash
+# Linux / macOS
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+
+# Windows (PowerShell)
+py -3.12 -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+Con uv, todos los comandos de este README se escriben como `uv run python ...`. Sin uv, activa
+antes el entorno y usa `python ...`. No mezcles las dos formas.
+
+### 2. Datos
+
+Los datos van en `data/`, que no se sube al repositorio. La estructura esperada está en
+[data/README.md](data/README.md). Descarga cada dataset a mano:
+
+- **State Farm Distracted Driver Detection** (Kaggle, ~4,3 GB):
+  1. Inicia sesión en Kaggle y acepta las reglas en
+     https://www.kaggle.com/competitions/state-farm-distracted-driver-detection/rules
+  2. En la pestaña Data, "Download All", y descomprime en `data/statefarm/`. Debe quedar
+     `data/statefarm/driver_imgs_list.csv` y `data/statefarm/imgs/train/c0 ... c9`.
+
+  > Si prefieres `kagglehub` (`kagglehub.competition_download(...)`), los archivos se guardan en la
+  > caché de `~/.cache/kagglehub/`. Hay que copiar o enlazar esa carpeta a `data/statefarm/`, porque
+  > los scripts del repositorio buscan ahí.
+
+- **MRL Eye Dataset** (~340 MB):
+  1. Descarga http://mrl.cs.vsb.cz/data/eyedataset/mrlEyes_2018_01.zip
+     (página del dataset: https://mrl.cs.vsb.cz/eyedataset.html).
+  2. Descomprime en `data/mrl_eye/`, de forma que quede `data/mrl_eye/mrlEyes_2018_01/`.
+
+- **DMD, Driver Monitoring Dataset de Vicomtech** (solo vídeo RGB; uso académico, CC BY-NC-ND 4.0):
+  1. Entra en https://dmd.vicomtech.org/, sección DOWNLOAD, y rellena el formulario de
+     "Distraction" (y el de "Drowsiness" para la somnolencia). Hay que ser mayor de 18 años.
+  2. Llega por correo un README y un enlace por conductor, por ejemplo
+     `dmd-dataset-distraction-gA-1.tar.gz` (grupo A, conductor 1, unos 5 GB). Los enlaces caducan
+     a las 48 horas. Para empezar no hace falta bajar todos los conductores.
+  3. Descomprime cada archivo dentro de `data/`:
+
+     ```bash
+     tar -xzf dmd-dataset-distraction-gA-1.tar.gz -C data
+     ```
+
+     Queda `data/dmd/gA/1/s1/...`: tres vídeos (face, body, hands), un mosaico con los tres
+     sincronizados y un `.json` con las etiquetas de cada fotograma.
+
+Comprueba que los datos están donde deben:
+
+```bash
+ls data/statefarm/imgs/train/        # c0 ... c9
+ls data/mrl_eye/mrlEyes_2018_01/     # carpetas s0001, s0002, ...
+ls data/dmd/gA/1/s1/                 # *_rgb_face.mp4, *_rgb_body.mp4, *_rgb_hands.mp4, *.json
+```
+
+### 3. Modelo de la cara de MediaPipe
+
+Necesario para la demo y para el cálculo de ojos y mirada (~4 MB, va a `data/models/`):
+
+```bash
+uv run python scripts/download_data.py
+```
+
+### 4. Ejecución
+
+Demo con la webcam (`c` calibra la pose actual como "mirando a la carretera", `q` sale):
+
+```bash
+uv run python scripts/demo_webcam.py
+uv run python scripts/demo_webcam.py --video clip.mp4 --guardar results/demo.mp4
+```
+
+Imágenes de los datasets para las diapositivas (van a `results/figuras/`, que sí está en el
+repositorio):
+
+```bash
+uv run python scripts/figuras_dataset.py statefarm
+uv run python scripts/figuras_dataset.py mrl
+```
+
+En la demo, el deslizador cambia el umbral del EAR.
+
+### Problemas frecuentes
+
+- **No encuentra el modelo de la cara**: falta el paso 3. Ejecuta `download_data.py`.
+- **Falla `figuras_dataset.py`**: revisa que la carpeta del dataset tiene la estructura del paso 2.
+- **La webcam no abre**: comprueba que ninguna otra aplicación la está usando.
+- **`tar` falla**: el archivo puede estar incompleto o el enlace del DMD haber caducado; vuelve a
+  descargarlo.
+- **Falta el `.json` del DMD**: el paquete de distracción y el de somnolencia son archivos
+  distintos; comprueba que descargaste el que necesitas.
+
 ## Plan
 
 ### Por qué dos cámaras
@@ -73,30 +182,15 @@ Con las particiones por conductor y las semillas (BT1a) y las gráficas (BT1b), 
 - Las clases de State Farm y del DMD no coinciden del todo: se comparan solo las comunes.
 - Poca luz y gafas: los ojos se ven peor (CLAHE, y comparar con el infrarrojo de MRL Eye).
 
-## Uso
+## Entorno (uv): reglas para el equipo
 
-```bash
-uv sync
-uv run python scripts/download_data.py                 # modelo de la cara (~4 MB)
-uv run python scripts/demo_webcam.py                   # demo: EAR, giro de la cabeza y alertas
-uv run python scripts/figuras_dataset.py statefarm     # imágenes para las diapositivas
-uv run python scripts/figuras_dataset.py mrl
-```
-
-Los datasets (State Farm, MRL Eye y DMD) se descargan a mano en `data/`: ver [INSTALL.txt](INSTALL.txt).
-
-En la demo: `c` toma la pose actual como "mirando a la carretera" y `q` sale. El deslizador
-cambia el umbral del EAR.
-
-## Entorno (uv)
-
-Igual que en el repositorio de Machine Learning: Python 3.12 y las versiones exactas en `uv.lock`.
-
-- `uv sync` después de cada `git pull`.
+- `uv sync --locked` después de cada `git pull`.
 - Para añadir o quitar librerías, `uv add` o `uv remove`, nunca `pip install`.
 - Si cambian las librerías, regenera `requirements.txt` y súbelo en el mismo commit que
   `pyproject.toml` y `uv.lock`:
   `uv export --format requirements-txt --no-hashes --no-dev -o requirements.txt`
+
+Igual que en el repositorio de Machine Learning: Python 3.12 y las versiones exactas en `uv.lock`.
 
 ## Datos y privacidad
 
@@ -106,6 +200,9 @@ solo tiene figuras pequeñas. No guardéis ahí capturas ni vídeos con vuestras
 están en `.gitignore`), ni fotogramas sacados del DMD: su licencia (CC BY-NC-ND) no permite
 publicar material derivado. La única imagen del DMD en el repositorio es la figura oficial de sus
 tres cámaras (`results/figuras/dmd_camaras.png`), sin modificar y citando la fuente.
+
+Para las reglas que siguen los agentes de IA que trabajen en el repositorio, ver
+[AGENTS.md](AGENTS.md).
 
 ## Uso de herramientas de IA
 
