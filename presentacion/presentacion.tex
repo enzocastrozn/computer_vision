@@ -1,7 +1,8 @@
 % Diapositivas de la exposición del miniproyecto de Visión Artificial (30 nov - 1 dic de 2026).
 % Mismo estilo que la presentación de Machine Learning (plantilla de Pablo).
 % Compilar desde esta carpeta con: pdflatex presentacion.tex  (dos veces).
-% Las imágenes se toman de ../results/figuras/ (están en el repositorio):
+% En Overleaf: subir este .tex y la carpeta figuras/ tal cual.
+% Las imágenes están en figuras/ (si falta alguna, se busca en ../results/figuras/):
 %   statefarm_clases.png y mrl_ojos.png -> uv run python scripts/figuras_dataset.py statefarm|mrl
 %   dmd_camaras.png                     -> figura oficial del DMD (Vicomtech), sin modificar
 %   demo.png                            -> captura de la demo (uv run python scripts/demo_webcam.py)
@@ -74,16 +75,16 @@
   left=3mm, right=3mm, top=1.5mm, bottom=1.5mm, #1}
 
 % Imagen si existe; si no, un recuadro con el texto dado.
-% Se busca primero en ../results/figuras/ (repositorio) y después en figuras/ (Overleaf: subir
-% allí los PNG de results/figuras/).
+% Se busca primero en figuras/ (junto a este .tex, también en Overleaf) y después en
+% ../results/figuras/ (donde las dejan los scripts del repositorio).
 \newcommand{\recuadro}[3]{%
     \begin{tcolorbox}[enhanced, width=#1, height=#2, colback=white, colframe=lineas, boxrule=0.6pt,
       arc=2mm, borderline={0.6pt}{0pt}{lineas,dashed}, valign=center, halign=center]
       {\scriptsize\color{gris}#3}
     \end{tcolorbox}}
 \newcommand{\figura}[4]{% nombre del fichero, ancho, alto, texto del recuadro
-  \IfFileExists{../results/figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{../results/figuras/#1}}{%
   \IfFileExists{figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{figuras/#1}}{%
+  \IfFileExists{../results/figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{../results/figuras/#1}}{%
   \recuadro{#2}{#3}{#4}}}}
 
 % Tablas con rejilla gris
@@ -450,18 +451,23 @@ Todo en \textbf{un único proyecto}: cada técnica está donde la pide el proble
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \centering
-\figura{demo.png}{\linewidth}{50mm}{Captura de la demo\\[1mm](pendiente)}
+\figura{demo.png}{\linewidth}{38mm}{Captura de la demo\\[1mm](pendiente)}
 \column{0.44\textwidth}
 \begin{caja}{Demo inicial}
-\begin{itemize}\setlength{\itemsep}{1mm}
-  \item Puntos de la cara con MediaPipe.
-  \item EAR en directo y aviso con los ojos cerrados más de 1 s.
-  \item Giro de la cabeza y aviso con la mirada fuera más de 2 s.
+\begin{itemize}\setlength{\itemsep}{0.6mm}
+  \item Con la webcam y sobre el DMD (dos cámaras).
+  \item Ojos cerrados más de 1~s: aviso.
+  \item Mirada fuera más de 2~s: aviso (giro de MediaPipe, por ahora).
 \end{itemize}
 \end{caja}
-\vspace{2mm}
-{\small Por ahora el giro sale de la pose que da MediaPipe; el siguiente paso es nuestro PnP con RANSAC.}
 \end{columns}
+
+\vspace{3mm}
+\begin{clave}
+\color{marino}\textbf{Primer número} (DMD, un conductor): nuestra «mirada fuera» coincide con su
+etiqueta en el \textbf{92\,\%} de los fotogramas, pero solo detecta el \textbf{65\,\%} de las veces que
+no mira la carretera.
+\end{clave}
 \end{frame}
 
 \begin{frame}{Riesgos y plan B}
