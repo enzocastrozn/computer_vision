@@ -1,7 +1,8 @@
 % Diapositivas de la exposición del miniproyecto de Visión Artificial (30 nov - 1 dic de 2026).
 % Mismo estilo que la presentación de Machine Learning (plantilla de Pablo).
 % Compilar desde esta carpeta con: pdflatex presentacion.tex  (dos veces).
-% Las imágenes se toman de ../results/figuras/ (están en el repositorio):
+% En Overleaf: subir este .tex y la carpeta figuras/ tal cual.
+% Las imágenes están en figuras/ (si falta alguna, se busca en ../results/figuras/):
 %   statefarm_clases.png y mrl_ojos.png -> uv run python scripts/figuras_dataset.py statefarm|mrl
 %   dmd_camaras.png                     -> figura oficial del DMD (Vicomtech), sin modificar
 %   demo.png                            -> captura de la demo (uv run python scripts/demo_webcam.py)
@@ -74,16 +75,16 @@
   left=3mm, right=3mm, top=1.5mm, bottom=1.5mm, #1}
 
 % Imagen si existe; si no, un recuadro con el texto dado.
-% Se busca primero en ../results/figuras/ (repositorio) y después en figuras/ (Overleaf: subir
-% allí los PNG de results/figuras/).
+% Se busca primero en figuras/ (junto a este .tex, también en Overleaf) y después en
+% ../results/figuras/ (donde las dejan los scripts del repositorio).
 \newcommand{\recuadro}[3]{%
     \begin{tcolorbox}[enhanced, width=#1, height=#2, colback=white, colframe=lineas, boxrule=0.6pt,
       arc=2mm, borderline={0.6pt}{0pt}{lineas,dashed}, valign=center, halign=center]
       {\scriptsize\color{gris}#3}
     \end{tcolorbox}}
 \newcommand{\figura}[4]{% nombre del fichero, ancho, alto, texto del recuadro
-  \IfFileExists{../results/figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{../results/figuras/#1}}{%
   \IfFileExists{figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{figuras/#1}}{%
+  \IfFileExists{../results/figuras/#1}{\includegraphics[width=#2,height=#3,keepaspectratio]{../results/figuras/#1}}{%
   \recuadro{#2}{#3}{#4}}}}
 
 % Tablas con rejilla gris
@@ -120,7 +121,7 @@
 \vspace{6mm}
 \begin{itemize}\setlength{\itemsep}{5mm}\large
   \item El problema y los datos
-  \item El enfoque: tres señales y una decisión
+  \item El enfoque: señales para alertar
   \item Cómo lo evaluaremos y qué tenemos ya
 \end{itemize}
 \end{frame}
@@ -194,7 +195,7 @@ conductor está distraído o tiene sueño y le avise.
 \figura{mrl_ojos.png}{\textwidth}{24mm}{MRL Eye: ojos abiertos y cerrados (falta la figura)}
 \end{frame}
 
-\begin{frame}{Una cámara no basta}
+\begin{frame}{Por qué dos cámaras}
 \vspace{1mm}
 \centering
 \figura{dmd_camaras.png}{\textwidth}{27mm}{DMD: cámaras de cara, cuerpo y manos (falta la figura)}
@@ -271,7 +272,7 @@ sujeto en MRL Eye. Con la partición aleatoria, el acierto sale inflado: lo medi
 % =====================================================================
 \seccion{El enfoque}
 
-\begin{frame}{Tres señales y una decisión}
+\begin{frame}{Señales para alertar}
 \vspace{1mm}
 \centering
 \begin{tikzpicture}[x=1mm,y=0.9mm,
@@ -319,7 +320,7 @@ Un solo sistema para los dos avisos de la UE: \textbf{somnolencia} (ojos) y
   \item Redimensionar manteniendo 4:3.
   \item Normalizar como ImageNet.
   \item \textit{Augmentation}: recorte y giro leves, brillo y contraste.
-  \item \textbf{Sin volteo horizontal}: «móvil con la derecha» pasaría a «con la izquierda».
+  \item \textbf{Sin efecto espejo}: «móvil con la derecha» pasaría a «con la izquierda».
 \end{itemize}
 \end{caja}
 \column{0.49\textwidth}
@@ -370,45 +371,23 @@ $\mathrm{EAR} = \dfrac{\lVert p_2-p_6\rVert + \lVert p_3-p_5\rVert}{2\,\lVert p_
 
 \begin{frame}{Decisión temporal}
 \vspace{1mm}
-Un fotograma no basta: un parpadeo cierra los ojos y mirar el retrovisor gira la cabeza.
+Miramos varios fotogramas seguidos para entender el contexto: un parpadeo también cierra los ojos, y
+mirar el retrovisor también gira la cabeza.
 
 \vspace{3mm}
 \centering\footnotesize
 \begin{tabular}{|l|p{62mm}|l|}
 \hline
 \textbf{Alerta} & \textbf{Regla} & \textbf{Aviso UE} \\ \hline
-\textbf{Microsueño} & Ojos cerrados seguidos más de 1 s & DDAW \\ \hline
+\textbf{Microsueño} & Ojos cerrados seguidos más de 1~s & DDAW \\ \hline
 \textbf{Somnolencia} & PERCLOS (\% del tiempo con los ojos cerrados en 30 s) por encima del umbral & DDAW \\ \hline
-\textbf{Mirada fuera} & Cabeza girada más de 30° durante más de 2 s & ADDW \\ \hline
+\textbf{Mirada fuera} & Cabeza girada más de 30° durante más de 2~s & ADDW \\ \hline
 \textbf{Actividad} & Móvil, bebida, radio... durante varios fotogramas seguidos & ADDW \\ \hline
 \end{tabular}
 
 \vspace{4mm}
 \raggedright
-{\small\color{gris}Los umbrales son de partida: los ajustaremos con nuestras grabaciones y los justificaremos en la memoria.}
-\end{frame}
-
-\begin{frame}{Tópicos de la asignatura}
-\centering\footnotesize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.35}
-\vspace{0mm}
-\begin{tabular}{|p{12mm}|p{104mm}|r|}
-\hline
-\textbf{Bloque} & \textbf{Dónde lo usamos} & \textbf{\%} \\ \hline
-\textbf{BT1} & Particiones por conductor y semillas · gráficas · demo en directo & 15 \\ \hline
-\textbf{BT2} & Giro de la cabeza con PnP & 5 \\ \hline
-\textbf{BT3} & CLAHE para poca luz e infrarrojo & 5 \\ \hline
-\textbf{BT4} & HOG + SVM para el ojo & 5 \\ \hline
-\textbf{BT5} & CNN propia · transfer learning · augmentation · métricas · clásico frente a aprendido · Grad-CAM & 30 \\ \hline
-\textbf{BT6} & ViT · DINOv2/v3 + SVM · puntos de la cara · varios modelos juntos & 25 \\ \hline
-\textbf{BT7} & RANSAC frente a mínimos cuadrados · sensibilidad al umbral & 15 \\ \hline
-\rowcolor{celeste}\textbf{Total} & & \textbf{100} \\ \hline
-\end{tabular}
-
-\vspace{3mm}
-\raggedright\normalsize
-Todo en \textbf{un único proyecto}: cada técnica está donde la pide el problema.
+{\small\color{gris}Los umbrales son de partida: los ajustaremos con los datos.}
 \end{frame}
 
 % =====================================================================
@@ -450,18 +429,23 @@ Todo en \textbf{un único proyecto}: cada técnica está donde la pide el proble
 \begin{columns}[T,onlytextwidth]
 \column{0.52\textwidth}
 \centering
-\figura{demo.png}{\linewidth}{50mm}{Captura de la demo\\[1mm](pendiente)}
+\figura{demo.png}{\linewidth}{38mm}{Captura de la demo\\[1mm](pendiente)}
 \column{0.44\textwidth}
 \begin{caja}{Demo inicial}
-\begin{itemize}\setlength{\itemsep}{1mm}
-  \item Puntos de la cara con MediaPipe.
-  \item EAR en directo y aviso con los ojos cerrados más de 1 s.
-  \item Giro de la cabeza y aviso con la mirada fuera más de 2 s.
+\begin{itemize}\setlength{\itemsep}{0.6mm}
+  \item Con la webcam y sobre el DMD (dos cámaras).
+  \item Ojos cerrados más de 1~s: aviso.
+  \item Mirada fuera más de 2~s: aviso (giro de MediaPipe, por ahora).
 \end{itemize}
 \end{caja}
-\vspace{2mm}
-{\small Por ahora el giro sale de la pose que da MediaPipe; el siguiente paso es nuestro PnP con RANSAC.}
 \end{columns}
+
+\vspace{3mm}
+\begin{clave}
+\color{marino}\textbf{Primer número} (DMD, un conductor): nuestra «mirada fuera» coincide con su
+etiqueta en el \textbf{92\,\%} de los fotogramas, pero solo detecta el \textbf{65\,\%} de las veces que
+no mira la carretera.
+\end{clave}
 \end{frame}
 
 \begin{frame}{Riesgos y plan B}
@@ -486,27 +470,6 @@ Todo en \textbf{un único proyecto}: cada técnica está donde la pide el proble
   \item CLAHE y comparar con el infrarrojo de MRL Eye.
 \end{itemize}
 \end{columns}
-\end{frame}
-
-\begin{frame}{Reparto y calendario}
-\vspace{1mm}
-\centering\footnotesize
-\begin{tabular}{|l|p{90mm}|}
-\hline
-\textbf{Quién} & \textbf{Parte} \\ \hline
-\textbf{Rodrigo} & Manos: CNN, ResNet y particiones por conductor \\ \hline
-\textbf{Enzo} & Manos: ViT, DINOv2/v3 y Grad-CAM \\ \hline
-\textbf{Pablo} & Ojos y mirada: EAR, HOG+SVM, PnP con RANSAC y la demo \\ \hline
-\end{tabular}
-
-\vspace{4mm}
-\begin{tabular}{|l|p{90mm}|}
-\hline
-\textbf{Cuándo} & \textbf{Qué} \\ \hline
-\textbf{2 – 13 dic} & Modelos principales y evaluación montada \\ \hline
-\textbf{14 dic – 6 ene} & Comparativas, grabaciones propias, casos de fallo y memoria \\ \hline
-\textbf{7 ene} & Entrega: memoria, código y vídeo \\ \hline
-\end{tabular}
 \end{frame}
 
 % =====================================================================

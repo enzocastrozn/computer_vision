@@ -86,6 +86,7 @@ def main():
     referencia = None  # (lateral, cabeceo) de la pose "mirando a la carretera"
     cerrados_desde = fuera_desde = None
     inicio, n = time.monotonic(), 0
+    ultimo_ms = -1  # MediaPipe exige marcas de tiempo estrictamente crecientes
 
     while True:
         ok, imagen = cap.read()
@@ -95,8 +96,13 @@ def main():
         n += 1
         umbral = 0.20 if args.sin_ventana else cv2.getTrackbarPos("umbral EAR x100", VENTANA) / 100
 
+        # La webcam puede entregar dos fotogramas en el mismo milisegundo: si la marca no avanza,
+        # se le suma 1 ms para que MediaPipe no se pare con "timestamp must be monotonically increasing"
+        ms = max(int(t * 1000), ultimo_ms + 1)
+        ultimo_ms = ms
+
         rgb = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
-        resultado = detector.detect_for_video(mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb), int(t * 1000))
+        resultado = detector.detect_for_video(mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb), ms)
         alertas = []
         if not resultado.face_landmarks:
             texto(imagen, "sin cara", 0, (0, 0, 255))
