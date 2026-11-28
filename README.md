@@ -79,6 +79,7 @@ Con las particiones por conductor y las semillas (BT1a) y las gráficas (BT1b), 
 uv sync
 uv run python scripts/download_data.py                 # modelo de la cara (~4 MB)
 uv run python scripts/demo_webcam.py                   # demo: EAR, giro de la cabeza y alertas
+uv run python scripts/demo_dmd.py data/dmd/gA/1/s2     # la misma demo sobre el DMD, con sus etiquetas
 uv run python scripts/figuras_dataset.py statefarm     # imágenes para las diapositivas
 uv run python scripts/figuras_dataset.py mrl
 ```
